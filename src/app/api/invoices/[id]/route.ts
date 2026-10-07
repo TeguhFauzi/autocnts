@@ -6,9 +6,9 @@ import { genDocNo } from "@/lib/utils";
 
 export async function GET(
     _req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const id = Number(params.id);
+    const id = Number((await params).id);
     const [header] = await db
         .select({
             id: invoices.id,
@@ -38,9 +38,9 @@ export async function GET(
 // Record a receipt (payment) against invoice
 export async function POST(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const id = Number(params.id);
+    const id = Number((await params).id);
     const b = await req.json();
     const amount = Number(b.amount || 0);
     if (amount <= 0)
@@ -79,9 +79,9 @@ export async function POST(
 
 export async function DELETE(
     _req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const id = Number(params.id);
+    const id = Number((await params).id);
     await db.delete(invoices).where(eq(invoices.id, id));
     return NextResponse.json({ ok: true });
 }

@@ -5,9 +5,9 @@ import { eq } from "drizzle-orm";
 
 export async function GET(
     _req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const id = Number(params.id);
+    const id = Number((await params).id);
     const [header] = await db
         .select()
         .from(journals)
@@ -33,9 +33,9 @@ export async function GET(
 
 export async function DELETE(
     _req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const id = Number(params.id);
+    const id = Number((await params).id);
     await db.delete(journals).where(eq(journals.id, id));
     return NextResponse.json({ ok: true });
 }

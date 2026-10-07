@@ -6,9 +6,9 @@ import { decryptId, encryptId } from "@/lib/crypto";
 
 export async function GET(
     _req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const id = decryptId(params.id);
+    const id = decryptId((await params).id);
     if (Number.isNaN(id))
         return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     const [row] = await db
@@ -23,9 +23,9 @@ export async function GET(
 
 export async function PUT(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const id = decryptId(params.id);
+    const id = decryptId((await params).id);
     if (Number.isNaN(id))
         return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     const b = await req.json();
@@ -47,9 +47,9 @@ export async function PUT(
 
 export async function DELETE(
     _req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const id = decryptId(params.id);
+    const id = decryptId((await params).id);
     if (Number.isNaN(id))
         return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     await db.delete(customers).where(eq(customers.id, id));
